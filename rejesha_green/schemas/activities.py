@@ -8,7 +8,7 @@ from rejesha_green.models.activity import UserGroup
 
 
 class ActivityCreate(BaseModel):
-    created_by: str
+    created_by: UUID
     zone_id: UUID
     activity_name: str = Field(..., max_length=100)
     scheduled_date: datetime
@@ -31,8 +31,8 @@ class ActivityUpdate(BaseModel):
 class ActivityResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    activity_id: str
-    created_by: str
+    activity_id: UUID
+    created_by: UUID
     zone_id: UUID
     activity_name: str
     scheduled_date: date

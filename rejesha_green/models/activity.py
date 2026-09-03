@@ -51,9 +51,10 @@ class Activity(Base):
     __tablename__ = "activities"
 
     activity_id = Column(
-        String(36),
+        UUID(as_uuid=True),
         primary_key=True,
-        default=lambda: str(uuid.uuid4()),
+        default=(uuid.uuid4()),
+      
     )   
 
 
