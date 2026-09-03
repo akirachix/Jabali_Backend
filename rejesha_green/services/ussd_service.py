@@ -1,12 +1,13 @@
 from sqlalchemy.orm import Session
 from fastapi.responses import PlainTextResponse
 
-from rejesha_green.services.permit_service import PermitService
+from rejesha_green.services.permit_service import permit_service
 from rejesha_green.models.incident import ActivityType
 from rejesha_green.models.forest_zone import ForestZone
 from rejesha_green.schemas.incidents import IncidentReportCreate
-from rejesha_green.services.incident_service import create_incident_report
-
+from rejesha_green.services.incident_service import (
+    create_incident_report,
+)
 
 
 def handle_ussd(
@@ -15,22 +16,20 @@ def handle_ussd(
     phone_number: str,
     text: str,
 ):
+    parts = text.split("*") if text else []
 
-    text_segments = text.split("*") if text else []
-
-
-    # ADDED: Route permit and incident flows
-    if not text_segments:
-
+    # MAIN MENU
+    if not parts:
         return PlainTextResponse(
             "CON Welcome to Rejesha Green\n"
             "1. Request Permit\n"
             "2. Report Incident"
         )
 
-
-    # ADDED: Permit flow entry point
-    if text_segments[0] == "1":
+    # =========================
+    # PERMIT FLOW
+    # =========================
+    if parts[0] == "1":
 
         response = permit_service.handle_ussd_request(
             db=db,
@@ -41,42 +40,31 @@ def handle_ussd(
 
         return PlainTextResponse(response)
 
+    # =========================
+    # INCIDENT FLOW
+    # =========================
+    if parts[0] == "2":
 
-
-    # INCIDENT FLOW STARTS HERE
-
-    if text_segments[0] == "2":
-
-
-        incident_text = "*".join(
-            text_segments[1:]
-        )
-
+        incident_text = "*".join(parts[1:])
 
         return handle_incident(
-            db,
-            incident_text
+            db=db,
+            text=incident_text,
         )
-
-
 
     return PlainTextResponse(
         "END Invalid selection."
     )
 
 
-
-
 def handle_incident(
     db: Session,
     text: str,
 ):
+    parts = text.split("*") if text else []
 
-    text_segments = text.split("*") if text else []
-
-
-    if len(text_segments) == 0:
-
+    # INCIDENT TYPE MENU
+    if len(parts) == 0:
         return PlainTextResponse(
             "CON Select Incident Type:\n"
             "1. Charcoal Burning\n"
@@ -85,30 +73,22 @@ def handle_incident(
             "4. Others"
         )
 
-
     incident_types = {
-
         "1": ActivityType.Charcoal_Burning,
         "2": ActivityType.Logging,
         "3": ActivityType.Poaching,
         "4": ActivityType.Others,
-
     }
 
+    # INCIDENT TYPE SELECTED
+    if len(parts) == 1:
 
-
-    if len(text_segments) == 1:
-
-        selected_type = incident_types.get(
-            text_segments[0]
-        )
+        selected_type = incident_types.get(parts[0])
 
         if selected_type is None:
-
             return PlainTextResponse(
                 "END Invalid incident type."
             )
-
 
         zones = (
             db.query(ForestZone)
@@ -119,43 +99,34 @@ def handle_incident(
             .all()
         )
 
-
         if not zones:
-
             return PlainTextResponse(
                 "END No forest zones available."
             )
 
-
-        response = (
-            "CON Select Forest Zone:\n"
-        )
-
+        response = "CON Select Forest Zone:\n"
 
         for index, zone in enumerate(
             zones,
-            start=1
+            start=1,
         ):
-
             response += (
-                f"{index}. "
-                f"{zone.block_name}\n"
+                f"{index}. {zone.block_name}\n"
             )
-
 
         return PlainTextResponse(
             response.rstrip()
         )
 
+    # INCIDENT TYPE + ZONE SELECTED
+    if len(parts) == 2:
 
+        selected_type = incident_types.get(parts[0])
 
-    if len(text_segments) == 2:
-
-
-        selected_type = incident_types.get(
-            text_segments[0]
-        )
-
+        if selected_type is None:
+            return PlainTextResponse(
+                "END Invalid incident type."
+            )
 
         zones = (
             db.query(ForestZone)
@@ -166,49 +137,36 @@ def handle_incident(
             .all()
         )
 
-
         try:
-
-            zone_index = (
-                int(text_segments[1]) - 1
-            )
-
+            zone_index = int(parts[1]) - 1
         except ValueError:
-
             return PlainTextResponse(
                 "END Invalid zone selection."
             )
-
 
         if (
             zone_index < 0
             or zone_index >= len(zones)
         ):
-
             return PlainTextResponse(
                 "END Invalid zone selection."
             )
 
-
         selected_zone = zones[zone_index]
-
 
         report_data = IncidentReportCreate(
             zone_id=selected_zone.zone_id,
             incident_type=selected_type,
         )
 
-
         create_incident_report(
             db,
             report_data,
         )
 
-
         return PlainTextResponse(
             "END Incident submitted successfully."
         )
-
 
     return PlainTextResponse(
         "END Invalid incident request."
