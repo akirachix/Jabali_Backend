@@ -9,7 +9,7 @@ from rejesha_green.schemas.forest_zone import (
     ForestZoneUpdate,
     ForestZoneResponse
 )
-
+from rejesha_green.models.forest_zone import ForestBlocks
 from rejesha_green.services import forest_zone_service
 from rejesha_green.security import require_role
 from rejesha_green.models.user import UserRole
@@ -79,6 +79,14 @@ def get_available_resources(
         )
 
     return result
+@router.get("/blocks")
+def get_all_blocks():
+    return [
+        {
+            "block_name": block.value,
+        }
+        for block in ForestBlocks
+    ]
 
 
 @router.get("/{zone_id}", response_model=ForestZoneResponse)
