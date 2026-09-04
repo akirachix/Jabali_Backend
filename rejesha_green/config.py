@@ -1,11 +1,12 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pathlib import Path
 
 
 
 
 class Settings(BaseSettings):
     DATABASE_URL: str
-
+   
 
     JWT_PRIVATE_KEY: str
     JWT_PUBLIC_KEY: str
@@ -15,7 +16,8 @@ class Settings(BaseSettings):
     DARAJA_CONSUMER_SECRET: str
     DARAJA_SHORTCODE: str
     DARAJA_PASSKEY: str
-    DARAJA_CALLBACK_URL: str
+    REGISTRATION_CALLBACK_URL: str
+    PERMIT_CALLBACK_URL:str
 
 
     SMS_API_URL: str
@@ -37,6 +39,9 @@ class Settings(BaseSettings):
     ADMIN_PHONE: str
     ADMIN_PASSWORD: str
 
+    USSD_API_KEY: str
+    AT_SHORTCODE:str
+
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -48,5 +53,7 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+settings.JWT_PRIVATE_KEY = Path(settings.JWT_PRIVATE_KEY).read_text()
+settings.JWT_PUBLIC_KEY = Path(settings.JWT_PUBLIC_KEY).read_text()
 
 

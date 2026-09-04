@@ -15,11 +15,15 @@ class PermitCreate(BaseModel):
         min_length=10,
         max_length=20,
     )
+    forest_zone_id: UUID
 
     requested_resources: str = Field(
         min_length=1,
         max_length=200,
     )
+
+   
+    resource_price_at_purchase: Decimal
 
     ussd_session_id: str = Field(
 
@@ -41,6 +45,10 @@ class PermitUpdate(BaseModel):
 class PermitInternalUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    forest_zone_id: Optional[UUID] = None       
+    requested_resources: Optional[str] = None   
+    resource_price_at_purchase: Optional[Decimal] = None 
+
     base_fee: Optional[Decimal] = None
     payment_amount: Optional[Decimal] = None
     phone_number: Optional[str] = None
@@ -52,6 +60,7 @@ class PermitInternalUpdate(BaseModel):
     max_permit: Optional[int] = None
     issued_at: Optional[datetime] = None
 
+    expiry_date: Optional[datetime] = None
     merchant_request_id: Optional[str] = None
     checkout_request_id: Optional[str] = None
     mpesa_receipt_number: Optional[str] = None
@@ -67,8 +76,10 @@ class PermitRead(BaseModel):
 
     permit_id: int
     member_id: UUID
+    forest_zone_id: UUID
 
-    requested_resources: str
+    
+    resource_price_at_purchase: Decimal
     base_fee: Optional[Decimal] = None
     payment_amount: Optional[Decimal] = None
     phone_number: str
@@ -80,6 +91,7 @@ class PermitRead(BaseModel):
     max_permit: Optional[int] = None
     issued_at: Optional[datetime] = None
 
+    expiry_date: Optional[datetime] = None
     merchant_request_id: Optional[str] = None
     checkout_request_id: Optional[str] = None
     mpesa_receipt_number: Optional[str] = None
@@ -95,5 +107,5 @@ class PermitRead(BaseModel):
     session_updated_at: Optional[datetime] = None
 
     deleted_at: Optional[datetime] = None
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None       

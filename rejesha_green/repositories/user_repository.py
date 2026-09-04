@@ -12,5 +12,6 @@ class UserRepository:
     def get_by_email(self, email: str): return self.db.query(User).filter(User.email == email).first() if email else None
     def update_user(self, user: User): self.db.commit(); self.db.refresh(user); return user
     def delete_user(self, user: User): self.db.delete(user); self.db.commit()
+    
 
 user_repository = UserRepository

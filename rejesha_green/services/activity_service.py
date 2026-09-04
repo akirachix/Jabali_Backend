@@ -17,7 +17,7 @@ class ActivityService:
         self.sms_service = SMSService()
 
     def _get_recipient_phone_numbers(self) -> list[str]:
-        from rejesha_green.models.users_model import User
+        from rejesha_green.models.user import User
         
         users = self.db.query(User).filter(User.is_active == True).all()
         phone_numbers = [u.phone for u in users if u.phone]

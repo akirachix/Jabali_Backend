@@ -11,7 +11,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 
 from database import Base
-from sqlalchemy import Boolean, Column, DateTime, Integer, Numeric, String, func
+
 #from sqlalchemy.orm import relationship
 
 
@@ -35,10 +35,16 @@ class Permit(Base):
     payment_created_at = Column(DateTime(timezone=True),nullable=True,)
     payment_completed_at = Column(DateTime(timezone=True),nullable=True,)
     ussd_session_id = Column(String(100),unique=True,nullable=False,index=True,)
+    forest_zone_id = Column(UUID(as_uuid=True),ForeignKey("forest_zones.zone_id"),nullable=False, index=True,)
+    resource_price_at_purchase = Column(Numeric(10, 2),nullable=False,)
+    expiry_date = Column(DateTime(timezone=True),nullable=True,)
+
+
 
 # payments = relationship("Payment", back_populates="permit")
     current_step = Column(String(50),nullable=False,default="start",)
-    session_data = Column(String(2000),nullable=True,)
+    session_data = Column(String(2000),nullable=True,)  
+   
     session_created_at = Column( DateTime(timezone=True), server_default=func.now(),nullable=False,)
     session_updated_at = Column(DateTime(timezone=True),onupdate=func.now(),nullable=True,)
     deleted_at = Column(DateTime(timezone=True),nullable=True,index=True,)

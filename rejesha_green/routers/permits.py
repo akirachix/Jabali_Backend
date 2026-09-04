@@ -9,7 +9,7 @@ from fastapi import (
     Response,
     status,
 )
-from fastapi.responses import PlainTextResponse
+
 from sqlalchemy.orm import Session
 
 from database import get_db
@@ -143,20 +143,3 @@ def delete_permit(
     )
 
 
-@router.post(
-    "/ussd/",
-    response_class=PlainTextResponse,
-)
-def ussd_callback(
-    sessionId: str = Form(...),
-    phoneNumber: str = Form(...),
-    serviceCode: str = Form(...),
-    text: str = Form(""),
-    db: Session = Depends(get_db),
-):
-    return permit_service.handle_ussd_request(
-        db=db,
-        session_id=sessionId,
-        phone_number=phoneNumber,
-        text=text,
-    )

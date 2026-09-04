@@ -7,8 +7,12 @@ from fastapi.security import HTTPAuthorizationCredentials,HTTPBearer
 from rejesha_green.config import settings
 
 bearer_scheme=HTTPBearer()
-PRIVATE_KEY=os.getenv("JWT_PRIVATE_KEY")
-PUBLIC_KEY=os.getenv("JWT_PUBLIC_KEY")
+
+# PRIVATE_KEY=os.getenv("JWT_PRIVATE_KEY")
+# PUBLIC_KEY=os.getenv("JWT_PUBLIC_KEY")
+PRIVATE_KEY = (settings.JWT_PRIVATE_KEY)
+PUBLIC_KEY = (settings.JWT_PUBLIC_KEY)
+
 
 def hash_password(password:str): return bcrypt.hashpw(password.encode("utf-8"),bcrypt.gensalt()).decode("utf-8")
 
@@ -38,4 +42,17 @@ def require_role(*allowed_roles):
     def role_checker(current_user=Depends(get_current_user)):
         if current_user.get("role") not in allowed_roles: raise HTTPException(status_code=403,detail="Insufficient permissions")
         return current_user
+    return role_checker
+def require_roles(*allowed_roles):
+    def role_checker(
+        current_user=Depends(get_current_user)
+    ):
+        if current_user.role not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions",
+            )
+
+        return current_user
+
     return role_checker

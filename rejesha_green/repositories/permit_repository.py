@@ -52,7 +52,7 @@ class PermitRepository:
         return (
             db.query(Permit)
 .filter(Permit.deleted_at.is_(None))
-.order_by(Permit.created_at.desc())
+.order_by(Permit.session_created_at.desc())
 .offset(skip)
 .limit(limit)
 .all()
@@ -108,7 +108,7 @@ class PermitRepository:
                 Permit.payment_status == "pending",
                 Permit.deleted_at.is_(None),
             )
-.order_by(Permit.created_at.desc())
+.order_by(Permit.session_created_at.desc())
 .all()
         )
 

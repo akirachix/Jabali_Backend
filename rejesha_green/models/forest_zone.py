@@ -1,7 +1,8 @@
-from sqlalchemy import Column, String, Boolean, Numeric
+from sqlalchemy import Column, String, Boolean, Numeric, ForeignKey
 from database import Base
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 import enum
 
 class ForestBlocks(str, enum.Enum):
@@ -46,9 +47,20 @@ class ForestZone(Base):
     __tablename__ = "forest_zones"
 
     zone_id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
-    cfa_name = Column(String(100),nullable=False)
+    community_forest_association_id = Column(
+    UUID(as_uuid=True),
+    ForeignKey(
+        "community_forest_associations.community_forest_association_id"
+    ),
+    nullable=False,
+    index=True,
+)
     block_name = Column(String(100), nullable=False)
     resource_type = Column(String(100),nullable=False)
     is_available = Column(Boolean,default=True,nullable=False)
-    resource_price = Column(Numeric(10,2),nullable=False)
-    
+    # resource_price = Column(Numeric(10,2),nullable=False)
+    resource_price = Column("price", Numeric(10, 2), nullable=False)
+    community_forest_association = relationship(
+    "CommunityForestAssociation"
+       
+)

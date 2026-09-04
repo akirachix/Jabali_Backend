@@ -7,7 +7,7 @@ from decimal import Decimal
 
 
 class ForestZoneCreate(BaseModel):
-    cfa_name: str
+    community_forest_association_id: UUID
     block_name: str
     resource_type: str
     is_available: bool = True
@@ -29,7 +29,7 @@ class ForestZoneCreate(BaseModel):
 
 
 class ForestZoneUpdate(BaseModel):
-    cfa_name: Optional[str] = None
+   
     block_name: Optional[str] = None
     resource_type: Optional[str] = None
     is_available: Optional[bool] = None
@@ -60,7 +60,7 @@ class ForestZoneUpdate(BaseModel):
 
 class ForestZoneResponse(BaseModel):
     zone_id: UUID
-    cfa_name: str
+    community_forest_association_id: UUID
     block_name: str
     resource_type: str
     is_available: bool

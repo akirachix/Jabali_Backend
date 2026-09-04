@@ -22,12 +22,10 @@ def get_forest_zone(db: Session, zone_id):
 
 
 def update_forest_zone(db: Session, zone_id, zone):
+
     db_zone = get_forest_zone(db, zone_id)
 
     if db_zone:
-
-        if zone.cfa_name is not None:
-            db_zone.cfa_name = zone.cfa_name
 
         if zone.block_name is not None:
             db_zone.block_name = zone.block_name
